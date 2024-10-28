@@ -1,7 +1,6 @@
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import Home from './pages/Home';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -33,21 +32,39 @@ import '@ionic/react/css/palettes/dark.system.css';
 /* Theme variables */
 import './theme/variables.css';
 
+import CarList from "./pages/CarList";
+import AddCarPage from "./pages/AddCarPage";
+import {CarProps} from "./pages/CarProps";
+import React from "react";
+import CarEditPage from "./pages/CarEditPage";
+import axios from "axios";
+
+
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route exact path="/home">
-          <Home />
-        </Route>
-        <Route exact path="/">
-          <Redirect to="/home" />
-        </Route>
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+const App: React.FC = () => {
+    const [cars, setCars] = React.useState<CarProps[]>([])
+    React.useEffect(()=> {
+        axios.get<CarProps[]>("http://localhost:3000/car")
+            .then(resp => resp.data)
+            .then(cars => setCars(cars))
+            .catch(err => console.log("Err: "+ err))
+    },[])
+    console.log(cars)
+    return (
+        <IonApp>
+            <IonReactRouter>
+                <IonRouterOutlet>
+                    <Route
+                        path="/carBy/:id"
+                        exact
+                        render={()=> <CarEditPage cars={cars}/>}/>
+                    <Route path="/cars" render={()=><CarList cars={cars} setCars={setCars}/>}/>
+                    <Route exact path="/" render={() => <Redirect to="/cars"/>}/>
+                    <Route exact path="/carsadd" component={AddCarPage}/>
+                </IonRouterOutlet>
+            </IonReactRouter>
+        </IonApp>
+    )};
 
 export default App;
