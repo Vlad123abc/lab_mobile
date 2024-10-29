@@ -1,10 +1,14 @@
-Aplicatie pentru gestionarea masinilor
+<h1>Aplicatie pentru gestionarea masinilor</h1>
 
-Functionalitati:
+<h3>Functionalitati:</h3>
 
-Pagina /cars:
+<br>
+
+<h6>pagina /cars: </h6>
 vizualizare lista masini
 
+<h6>pagina /carsadd: </h6>
 adaugare masina noua
 
+<h6>pagina /carBy/{id}: </h6>
 la selectarea unei masini din lista, se deschide o pagina de edit pentru modificare masinii selectate
