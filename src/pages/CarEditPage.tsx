@@ -4,7 +4,7 @@ import { IonButton, IonCheckbox, IonDatetime, IonInput } from "@ionic/react";
 import { CarProps } from "./CarProps";
 import axios from "axios";
 
-const CarEditPage = ({ cars, setCars }: { cars: CarProps[] }): React.JSX.Element => {
+const CarEditPage = ({ cars, setCars }): React.JSX.Element => {
     const [car, setCar] = useState<CarProps>({ brand: "", date: "", is_new: false });
     const { id } = useParams<{ id: string }>();
     const history = useHistory();

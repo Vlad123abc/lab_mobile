@@ -1,4 +1,4 @@
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route, useParams } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
@@ -57,10 +57,10 @@ const App: React.FC = () => {
                     <Route
                         path="/carBy/:id"
                         exact
-                        render={()=> <CarEditPage cars={cars}/>}/>
+                        render={()=> <CarEditPage cars={cars} setCars={setCars}/>}/>
                     <Route path="/cars" render={()=><CarList cars={cars} setCars={setCars}/>}/>
                     <Route exact path="/" render={() => <Redirect to="/cars"/>}/>
-                    <Route exact path="/carsadd" component={AddCarPage}/>
+                    <Route exact path="/carsadd" render={()=> <AddCarPage setCars={setCars}/>}/>
             </IonReactRouter>
         </IonApp>
     )};
