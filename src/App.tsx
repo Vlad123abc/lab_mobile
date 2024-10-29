@@ -54,7 +54,6 @@ const App: React.FC = () => {
     return (
         <IonApp>
             <IonReactRouter>
-                <IonRouterOutlet>
                     <Route
                         path="/carBy/:id"
                         exact
@@ -62,7 +61,6 @@ const App: React.FC = () => {
                     <Route path="/cars" render={()=><CarList cars={cars} setCars={setCars}/>}/>
                     <Route exact path="/" render={() => <Redirect to="/cars"/>}/>
                     <Route exact path="/carsadd" component={AddCarPage}/>
-                </IonRouterOutlet>
             </IonReactRouter>
         </IonApp>
     )};
