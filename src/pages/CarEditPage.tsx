@@ -49,9 +49,11 @@ const CarEditPage = ({ cars, setCars }): React.JSX.Element => {
             </IonCheckbox>
             <div>
                 <IonButton onClick={() => {
-                    axios.put(`http://localhost:3000/car/${car.id}`, car)
+                    axios.put(`http://localhost:3000/car/${id}`, car)
                         .then(resp => {
-                            console.log("Car edited");
+                            console.log("Car edited wit id" + id);
+                            car.id = id
+                            console.log("new Caer" + JSON.stringify(car))
                             const index = cars.findIndex(item => item.id === car.id);
                             setCars((prevState) => {
                                 const updatedCars = [...prevState];
