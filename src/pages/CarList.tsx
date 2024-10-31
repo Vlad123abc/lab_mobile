@@ -12,6 +12,3 @@ const CarList = ({cars, setCars}): React.JSX.Element => {
 }
 
 export default CarList
-
-
-
