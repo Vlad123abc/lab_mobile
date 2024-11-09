@@ -4,14 +4,14 @@ import { IonButton, IonCheckbox, IonDatetime, IonInput } from "@ionic/react";
 import { CarProps } from "./CarProps";
 import axios from "axios";
 
-const CarEditPage = ({ cars, setCars }): React.JSX.Element => {
+const CarEditPage = ({ cars }): React.JSX.Element => {
     const [car, setCar] = useState<CarProps>({ brand: "", date: "", is_new: false });
     const { id } = useParams<{ id: string }>();
     const history = useHistory();
-
     useEffect(() => {
         if (cars && cars.length > 0) {
-            const selectedCar = cars.find(c => c.id === Number(id)); // Convert id to number
+            console.log(cars)
+            const selectedCar = cars.find(c => c.id === id); // Convert id to number
             if (selectedCar) {
                 setCar(selectedCar);
                 console.log("Car: " + JSON.stringify(selectedCar));
@@ -51,17 +51,6 @@ const CarEditPage = ({ cars, setCars }): React.JSX.Element => {
                 <IonButton onClick={() => {
                     axios.put(`http://localhost:3000/car/${id}`, car)
                         .then(resp => {
-                            console.log("Car edited wit id" + id);
-                            car.id = id
-                            console.log("new Caer" + JSON.stringify(car))
-                            const index = cars.findIndex(item => item.id === car.id);
-                            setCars((prevState) => {
-                                const updatedCars = [...prevState];
-                                if (index !== -1) {
-                                    updatedCars[index] = car;
-                                }
-                                return updatedCars;
-                            });
                             history.push("/cars");
                         })
                         .catch(err => console.log("Err: car not saved due to: " + err));

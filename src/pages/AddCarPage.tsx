@@ -4,7 +4,7 @@ import {CarProps} from "./CarProps";
 import axios from "axios";
 import {useHistory} from "react-router";
 
-const AddCarPage = ({setCars}): React.JSX.Element => {
+const AddCarPage = (): React.JSX.Element => {
     const [car, setCar] = React.useState<CarProps>({brand: "", date: "", id: "", is_new: false})
     const history = useHistory()
 
@@ -33,10 +33,6 @@ const AddCarPage = ({setCars}): React.JSX.Element => {
             <IonButton onClick={()=> {
                 axios.post("http://localhost:3000/car", car)
                     .then(resp => {
-                        setCars((prevState) => {
-                            const updatedCars = [...prevState, resp.data];
-                            return updatedCars;
-                        });
                         console.log("Car added")
                         history.push("/cars")
                     })
