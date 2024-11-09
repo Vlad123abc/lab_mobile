@@ -1,4 +1,4 @@
-import React from "react";
+import React, {createContext} from "react";
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
@@ -40,9 +40,15 @@ import '@ionic/react/css/palettes/dark.system.css';
 import './theme/variables.css';
 
 setupIonicReact();
+interface ICars {
+    cars: CarProps[]
+    setCars: React.Dispatch<React.SetStateAction<CarProps[]>>
+}
+export const CarsContext = createContext<ICars>({cars:[], setCars: ()=>{}})
 
 const App: React.FC = () => {
     const [cars, setCars] = React.useState<CarProps[]>([]);
+
 
     React.useEffect(() => {
         // Fetch initial car list
@@ -93,12 +99,17 @@ const App: React.FC = () => {
 
     return (
         <IonApp>
-            <IonReactRouter>
-                <Route path="/carBy/:id" exact render={() => <CarEditPage cars={cars} />} />
-                <Route path="/cars" render={() => <CarList cars={cars} setCars={setCars} />} />
-                <Route exact path="/" render={() => <Redirect to="/cars" />} />
-                <Route exact path="/carsadd" render={() => <AddCarPage />} />
-            </IonReactRouter>
+            <CarsContext.Provider value={{
+                cars: cars,
+                setCars: setCars
+            }}>
+                <IonReactRouter>
+                    <Route path="/carBy/:id" exact render={() => <CarEditPage/>} />
+                    <Route path="/cars" render={() => <CarList/>} />
+                    <Route exact path="/" render={() => <Redirect to="/cars" />} />
+                    <Route exact path="/carsadd" render={() => <AddCarPage />} />
+                </IonReactRouter>
+            </CarsContext.Provider>
         </IonApp>
     );
 };

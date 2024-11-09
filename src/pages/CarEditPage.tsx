@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import { useHistory, useParams } from "react-router";
 import { IonButton, IonCheckbox, IonDatetime, IonInput } from "@ionic/react";
 import { CarProps } from "./CarProps";
 import axios from "axios";
+import {CarsContext} from "../App";
 
-const CarEditPage = ({ cars }): React.JSX.Element => {
+const CarEditPage = (): React.JSX.Element => {
     const [car, setCar] = useState<CarProps>({ brand: "", date: "", is_new: false });
     const { id } = useParams<{ id: string }>();
     const history = useHistory();
+    const {cars} = useContext(CarsContext)
     useEffect(() => {
         if (cars && cars.length > 0) {
             console.log(cars)
