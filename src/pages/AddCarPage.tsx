@@ -1,10 +1,12 @@
-import React from "react";
+import React, {useContext} from "react";
 import {IonButton, IonCheckbox, IonDatetime, IonInput} from "@ionic/react";
 import {CarProps} from "./CarProps";
 import axios from "axios";
 import {useHistory} from "react-router";
+import {AuthContext} from "../App";
 
 const AddCarPage = (): React.JSX.Element => {
+    const {token} = useContext(AuthContext)
     const [car, setCar] = React.useState<CarProps>({brand: "", date: "", id: "", is_new: false})
     const history = useHistory()
 
@@ -13,16 +15,14 @@ const AddCarPage = (): React.JSX.Element => {
         <IonInput placeholder={"Brand"}
                   value={car.brand}
                   onIonChange={(e)=> setCar((prevState)=>{
-                      return {...prevState, brand: e.detail.value};
+                      return {...prevState, brand: String(e.detail.value)};
                   })}
         ></IonInput>
         <IonDatetime
             value={car.date}
             onIonChange={(e)=> setCar((prevState)=>{
-                return {...prevState, date: e.detail.value.split("T")[0]};
+                return {...prevState, date: String(e.detail.value).split("T")[0]};
             })}
-            displayFormat="YYYY-MM-DD"
-            placeholder="Select a date"
         />
         <IonCheckbox
             checked={car.is_new}
@@ -31,7 +31,9 @@ const AddCarPage = (): React.JSX.Element => {
             })}>Is new</IonCheckbox>
         <div>
             <IonButton onClick={()=> {
-                axios.post("http://localhost:3000/car", car)
+                axios.post("http://localhost:3000/car", car, {headers: {
+                    Authorization: `Bearer ${token}`
+                    }})
                     .then(resp => {
                         console.log("Car added")
                         history.push("/cars")

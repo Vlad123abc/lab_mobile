@@ -9,6 +9,7 @@ import AddCarPage from "./pages/AddCarPage";
 import CarEditPage from "./pages/CarEditPage";
 import { CarProps } from "./pages/CarProps";
 
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -38,6 +39,7 @@ import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import LoginPage from "./pages/LoginPage";
 
 setupIonicReact();
 interface ICars {
@@ -46,31 +48,56 @@ interface ICars {
 }
 export const CarsContext = createContext<ICars>({cars:[], setCars: ()=>{}})
 
+interface IAuthentication {
+    token: string
+    setToken: React.Dispatch<React.SetStateAction<string>>
+}
+export const AuthContext = createContext<IAuthentication>({token:"", setToken: ()=>{}})
+
 const App: React.FC = () => {
     const [cars, setCars] = React.useState<CarProps[]>([]);
+    const [token, setToken] = React.useState<string>("")
 
 
     React.useEffect(() => {
+        const token = localStorage.getItem("token")
+        if(token && token !== "" ) {
+            setToken(token)
+        }
+    },[])
+
+    React.useEffect(() => {
         // Fetch initial car list
-        axios.get<CarProps[]>("http://localhost:3000/car")
-            .then(resp => resp.data)
-            .then(cars => setCars(cars))
-            .catch(err => console.log("Error: " + err));
+        console.log("Fetching with token: "+token)
+        if(token !== ""){
+            axios.get<CarProps[]>("http://localhost:3000/car",{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+                .then(resp => resp.data)
+                .then(cars => setCars(cars))
+                .catch(err => console.log("Error: " + err));
 
-        // Set up WebSocket connection
-        const ws = new WebSocket("ws://localhost:3000");
+            // Set up WebSocket connection
+            const ws = new WebSocket("ws://localhost:3000");
 
-        // Handle WebSocket messages
-        ws.onmessage = (event) => {
-            const message = JSON.parse(event.data);
-            handleWebSocketMessage(message);
-        };
+            ws.onopen = ()=> {
+                console.log("Sending token to server")
+                ws.send(token)
+            }
+            // Handle WebSocket messages
+            ws.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                handleWebSocketMessage(message);
+            };
 
-        // Clean up WebSocket connection on component unmount
-        return () => {
-            ws.close();
-        };
-    }, []);
+            // Clean up WebSocket connection on component unmount
+            return () => {
+                ws.close();
+            };
+        }
+    }, [token]);
 
     // Handle WebSocket messages to update car list
     const handleWebSocketMessage = (message: any) => {
@@ -99,17 +126,23 @@ const App: React.FC = () => {
 
     return (
         <IonApp>
-            <CarsContext.Provider value={{
-                cars: cars,
-                setCars: setCars
+            <AuthContext.Provider value={{
+                token: token,
+                setToken: setToken
             }}>
-                <IonReactRouter>
-                    <Route path="/carBy/:id" exact render={() => <CarEditPage/>} />
-                    <Route path="/cars" render={() => <CarList/>} />
-                    <Route exact path="/" render={() => <Redirect to="/cars" />} />
-                    <Route exact path="/carsadd" render={() => <AddCarPage />} />
-                </IonReactRouter>
-            </CarsContext.Provider>
+                <CarsContext.Provider value={{
+                    cars: cars,
+                    setCars: setCars
+                }}>
+                    <IonReactRouter>
+                        <Route path="/login" exact render={() => <LoginPage/>} />
+                        <Route path="/carBy/:id" exact render={() => <CarEditPage/>} />
+                        <Route path="/cars" render={() => <CarList/>} />
+                        <Route exact path="/" render={() => <Redirect to="/cars" />} />
+                        <Route exact path="/carsadd" render={() => <AddCarPage />} />
+                    </IonReactRouter>
+                </CarsContext.Provider>
+            </AuthContext.Provider>
         </IonApp>
     );
 };
