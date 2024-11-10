@@ -8,7 +8,7 @@ import CarList from "./pages/CarList";
 import AddCarPage from "./pages/AddCarPage";
 import CarEditPage from "./pages/CarEditPage";
 import { CarProps } from "./pages/CarProps";
-
+import NetworkStatus from "./components/NetworkStatus";
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
 
@@ -86,6 +86,9 @@ const App: React.FC = () => {
     if (wsState && wsState !== "") {
       setWsState(wsState);
     }
+
+    console.log("wsstate is now:", wsState);
+
     const token = localStorage.getItem("token");
     if (token && token !== "") {
       setToken(token);
@@ -118,6 +121,8 @@ const App: React.FC = () => {
 
       ws.onopen = () => {
         console.log("Sending token to server");
+
+        console.log("wsstate is now:", wsState);
         ws.send(token);
         console.log("setting ws state to open!");
         setWsState("open");
@@ -133,6 +138,7 @@ const App: React.FC = () => {
         console.log("ws disconnected!!!");
         setWsState("disco");
         localStorage.setItem("wsState", "disco");
+        console.log("wsstate is now:", wsState);
       };
       // Clean up WebSocket connection on component unmount
       return () => {
@@ -168,6 +174,9 @@ const App: React.FC = () => {
 
   return (
     <IonApp>
+      <WsStateContext.Provider value={{ wsState, setWsState }}>
+        <NetworkStatus />
+      </WsStateContext.Provider>
       <AuthContext.Provider
         value={{
           token: token,

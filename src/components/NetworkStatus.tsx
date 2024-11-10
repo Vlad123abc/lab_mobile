@@ -21,8 +21,7 @@ import { CarProps } from "../pages/CarProps";
 import { Network } from "@capacitor/network";
 import { WsStateContext } from "../App";
 const NetworkStatus: React.FC = () => {
-  const [connected, setConnected] = useState(false);
-
+  const { wsState, setWsState } = useContext(WsStateContext);
   useEffect(() => {
     Network.addListener("networkStatusChange", (status) => {
       console.log("Network status changed", status);
@@ -35,7 +34,6 @@ const NetworkStatus: React.FC = () => {
     console.log("Network status:", wsState);
   };
 
-  const { wsState } = useContext(WsStateContext);
   return <div>{wsState}</div>;
 };
 
