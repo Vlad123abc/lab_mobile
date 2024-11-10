@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode } from "react";
+import React, { createContext, useState, ReactNode, useRef } from "react";
 import { Redirect, Route } from "react-router-dom";
 import { IonApp, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
@@ -7,7 +7,7 @@ import axios from "axios";
 import CarList from "./pages/CarList";
 import AddCarPage from "./pages/AddCarPage";
 import CarEditPage from "./pages/CarEditPage";
-import { CarProps } from "./pages/CarProps";
+import { CarProps, CarAction } from "./pages/CarProps";
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
 
@@ -24,6 +24,7 @@ import "@ionic/react/css/text-transformation.css";
 import "@ionic/react/css/flex-utils.css";
 import "@ionic/react/css/display.css";
 
+import { useHistory } from "react-router";
 /**
  * Ionic Dark Mode
  * -----------------------------------------------------
@@ -41,6 +42,16 @@ import LoginPage from "./pages/LoginPage";
 import NetworkStatus from "./components/NetworkStatus";
 
 setupIonicReact();
+
+interface IActions {
+  actions: CarAction[];
+  setActions: React.Dispatch<React.SetStateAction<CarAction[]>>;
+}
+
+export const ActionsContext = createContext<IActions>({
+  actions: [],
+  setActions: () => {},
+});
 
 interface IWsState {
   wsState: string;
@@ -62,6 +73,30 @@ export const CarsContext = createContext<ICars>({
   setCars: () => {},
 });
 
+export const processActionQueue = (
+  token: string,
+  actionQueue: CarAction[],
+  setActions: React.Dispatch<React.SetStateAction<CarAction[]>>,
+) => {
+  console.log("action queue is set to:", actionQueue);
+
+  if (actionQueue.length > 0) {
+    let car = actionQueue.at(0);
+    axios
+      .post("http://localhost:3000/car", car?.car, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((resp) => {
+        console.log("Car added, status:", resp.status);
+        actionQueue = actionQueue.slice(1);
+        setActions(actionQueue);
+      })
+      .catch((err) => console.log("Err car not sent due to: " + err));
+  }
+};
+
 interface IAuthentication {
   token: string;
   setToken: React.Dispatch<React.SetStateAction<string>>;
@@ -81,13 +116,14 @@ const App: React.FC = () => {
   const [token, setToken] = React.useState<string>("");
   const [uname, setUname] = React.useState<string>("");
   const [wsState, setWsState] = React.useState<string>("");
+  const [actions, setActions] = React.useState<CarAction[]>([]);
+  const wsRef = useRef<WebSocket | null>(null);
+
   React.useEffect(() => {
     const wsState = localStorage.getItem("wsState");
     if (wsState && wsState !== "") {
       setWsState(wsState);
     }
-
-    console.log("wsstate is now:", wsState);
 
     const token = localStorage.getItem("token");
     if (token && token !== "") {
@@ -99,6 +135,47 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const connectWebSocket = () => {
+    if (wsRef.current) {
+      wsRef.current.close(); // Close the existing connection if any
+    }
+
+    const ws = new WebSocket("ws://localhost:3000?username=" + uname);
+
+    ws.onopen = () => {
+      console.log("Sending token to server");
+
+      console.log("wsstate is now:", wsState);
+      ws.send(token);
+      console.log("setting ws state to open!");
+      setWsState("open");
+      localStorage.setItem("wsState", "open");
+      console.log("wsstate is now:", wsState);
+      processActionQueue(token, actions, setActions);
+    };
+
+    ws.onclose = () => {
+      console.log("ws disconnected!!!");
+      setWsState("disco");
+      localStorage.setItem("wsState", "disco");
+      console.log("wsstate is now:", wsState);
+      setTimeout(() => {
+        connectWebSocket();
+      }, 5000); // Reconnect after 5 seconds
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    ws.onmessage = (event) => {
+      console.log("Received message:", event.data);
+      const message = JSON.parse(event.data);
+      handleWebSocketMessage(message);
+    };
+
+    wsRef.current = ws;
+  };
   React.useEffect(() => {
     // Fetch initial car list
     console.log("Fetching with token: " + token);
@@ -112,40 +189,22 @@ const App: React.FC = () => {
         .then((resp) => resp.data)
         .then((cars) => setCars(cars))
         .catch((err) => console.log("Error: " + err));
-
-      // Set up WebSocket connection
-      console.log("wsState is:", wsState);
-      console.log("token is:", token);
-      console.log("uname is:", uname);
-      const ws = new WebSocket("ws://localhost:3000?username=" + uname);
-
-      ws.onopen = () => {
-        console.log("Sending token to server");
-
-        console.log("wsstate is now:", wsState);
-        ws.send(token);
-        console.log("setting ws state to open!");
-        setWsState("open");
-        localStorage.setItem("wsState", "open");
-        console.log("wsstate is now:", wsState);
-      };
-      // Handle WebSocket messages
-      ws.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        handleWebSocketMessage(message);
-      };
-      ws.onclose = () => {
-        console.log("ws disconnected!!!");
-        setWsState("disco");
-        localStorage.setItem("wsState", "disco");
-        console.log("wsstate is now:", wsState);
-      };
-      // Clean up WebSocket connection on component unmount
+      connectWebSocket();
       return () => {
-        ws.close();
+        wsRef.current?.close();
       };
     }
   }, [token]);
+
+  React.useEffect(() => {
+    console.log("Items have been updated due to useEffect:", actions);
+    processActionQueue(token, actions, setActions);
+  }, [actions]);
+
+  React.useEffect(() => {
+    console.log("Items have been updated due to  new wsState:", wsState);
+    processActionQueue(token, actions, setActions);
+  }, [wsState]);
 
   // Handle WebSocket messages to update car list
   const handleWebSocketMessage = (message: any) => {
@@ -174,31 +233,36 @@ const App: React.FC = () => {
 
   return (
     <IonApp>
-      <WsStateContext.Provider value={{ wsState, setWsState }}>
-        <AuthContext.Provider
-          value={{
-            token: token,
-            setToken: setToken,
-            uname: uname,
-            setUname: setUname,
-          }}
-        >
-          <CarsContext.Provider
+      <ActionsContext.Provider
+        value={{ actions: actions, setActions: setActions }}
+      >
+        {" "}
+        <WsStateContext.Provider value={{ wsState, setWsState }}>
+          <AuthContext.Provider
             value={{
-              cars: cars,
-              setCars: setCars,
+              token: token,
+              setToken: setToken,
+              uname: uname,
+              setUname: setUname,
             }}
           >
-            <IonReactRouter>
-              <Route path="/login" exact render={() => <LoginPage />} />
-              <Route path="/carBy/:id" exact render={() => <CarEditPage />} />
-              <Route path="/cars" render={() => <CarList />} />
-              <Route exact path="/" render={() => <Redirect to="/cars" />} />
-              <Route exact path="/carsadd" render={() => <AddCarPage />} />
-            </IonReactRouter>
-          </CarsContext.Provider>
-        </AuthContext.Provider>
-      </WsStateContext.Provider>
+            <CarsContext.Provider
+              value={{
+                cars: cars,
+                setCars: setCars,
+              }}
+            >
+              <IonReactRouter>
+                <Route path="/login" exact render={() => <LoginPage />} />
+                <Route path="/carBy/:id" exact render={() => <CarEditPage />} />
+                <Route path="/cars" render={() => <CarList />} />
+                <Route exact path="/" render={() => <Redirect to="/cars" />} />
+                <Route exact path="/carsadd" render={() => <AddCarPage />} />
+              </IonReactRouter>
+            </CarsContext.Provider>
+          </AuthContext.Provider>
+        </WsStateContext.Provider>
+      </ActionsContext.Provider>
     </IonApp>
   );
 };
