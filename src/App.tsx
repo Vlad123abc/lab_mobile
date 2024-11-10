@@ -41,10 +41,22 @@ import "./theme/variables.css";
 import LoginPage from "./pages/LoginPage";
 
 setupIonicReact();
+
+interface IWsState {
+  wsState: string;
+  setWsState: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export const WsStateContext = createContext<IWsState>({
+  wsState: "",
+  setWsState: () => {},
+});
+
 interface ICars {
   cars: CarProps[];
   setCars: React.Dispatch<React.SetStateAction<CarProps[]>>;
 }
+
 export const CarsContext = createContext<ICars>({
   cars: [],
   setCars: () => {},
@@ -56,6 +68,7 @@ interface IAuthentication {
   uname: string;
   setUname: React.Dispatch<React.SetStateAction<string>>;
 }
+
 export const AuthContext = createContext<IAuthentication>({
   token: "",
   setToken: () => {},
@@ -67,7 +80,12 @@ const App: React.FC = () => {
   const [cars, setCars] = React.useState<CarProps[]>([]);
   const [token, setToken] = React.useState<string>("");
   const [uname, setUname] = React.useState<string>("");
+  const [wsState, setWsState] = React.useState<string>("");
   React.useEffect(() => {
+    const wsState = localStorage.getItem("wsState");
+    if (wsState && wsState !== "") {
+      setWsState(wsState);
+    }
     const token = localStorage.getItem("token");
     if (token && token !== "") {
       setToken(token);
@@ -93,6 +111,7 @@ const App: React.FC = () => {
         .catch((err) => console.log("Error: " + err));
 
       // Set up WebSocket connection
+      console.log("wsState is:", wsState);
       console.log("token is:", token);
       console.log("uname is:", uname);
       const ws = new WebSocket("ws://localhost:3000?username=" + uname);
@@ -100,13 +119,21 @@ const App: React.FC = () => {
       ws.onopen = () => {
         console.log("Sending token to server");
         ws.send(token);
+        console.log("setting ws state to open!");
+        setWsState("open");
+        localStorage.setItem("wsState", "open");
+        console.log("wsstate is now:", wsState);
       };
       // Handle WebSocket messages
       ws.onmessage = (event) => {
         const message = JSON.parse(event.data);
         handleWebSocketMessage(message);
       };
-
+      ws.onclose = () => {
+        console.log("ws disconnected!!!");
+        setWsState("disco");
+        localStorage.setItem("wsState", "disco");
+      };
       // Clean up WebSocket connection on component unmount
       return () => {
         ws.close();
