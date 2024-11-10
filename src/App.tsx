@@ -1,4 +1,4 @@
-import React, { createContext } from "react";
+import React, { createContext, useState, ReactNode } from "react";
 import { Redirect, Route } from "react-router-dom";
 import { IonApp, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
@@ -8,7 +8,6 @@ import CarList from "./pages/CarList";
 import AddCarPage from "./pages/AddCarPage";
 import CarEditPage from "./pages/CarEditPage";
 import { CarProps } from "./pages/CarProps";
-import NetworkStatus from "./components/NetworkStatus";
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
 
@@ -39,6 +38,7 @@ import "@ionic/react/css/palettes/dark.system.css";
 /* Theme variables */
 import "./theme/variables.css";
 import LoginPage from "./pages/LoginPage";
+import NetworkStatus from "./components/NetworkStatus";
 
 setupIonicReact();
 
@@ -48,7 +48,7 @@ interface IWsState {
 }
 
 export const WsStateContext = createContext<IWsState>({
-  wsState: "",
+  wsState: "BALUBA-NOTSET",
   setWsState: () => {},
 });
 
@@ -175,31 +175,30 @@ const App: React.FC = () => {
   return (
     <IonApp>
       <WsStateContext.Provider value={{ wsState, setWsState }}>
-        <NetworkStatus />
-      </WsStateContext.Provider>
-      <AuthContext.Provider
-        value={{
-          token: token,
-          setToken: setToken,
-          uname: uname,
-          setUname: setUname,
-        }}
-      >
-        <CarsContext.Provider
+        <AuthContext.Provider
           value={{
-            cars: cars,
-            setCars: setCars,
+            token: token,
+            setToken: setToken,
+            uname: uname,
+            setUname: setUname,
           }}
         >
-          <IonReactRouter>
-            <Route path="/login" exact render={() => <LoginPage />} />
-            <Route path="/carBy/:id" exact render={() => <CarEditPage />} />
-            <Route path="/cars" render={() => <CarList />} />
-            <Route exact path="/" render={() => <Redirect to="/cars" />} />
-            <Route exact path="/carsadd" render={() => <AddCarPage />} />
-          </IonReactRouter>
-        </CarsContext.Provider>
-      </AuthContext.Provider>
+          <CarsContext.Provider
+            value={{
+              cars: cars,
+              setCars: setCars,
+            }}
+          >
+            <IonReactRouter>
+              <Route path="/login" exact render={() => <LoginPage />} />
+              <Route path="/carBy/:id" exact render={() => <CarEditPage />} />
+              <Route path="/cars" render={() => <CarList />} />
+              <Route exact path="/" render={() => <Redirect to="/cars" />} />
+              <Route exact path="/carsadd" render={() => <AddCarPage />} />
+            </IonReactRouter>
+          </CarsContext.Provider>
+        </AuthContext.Provider>
+      </WsStateContext.Provider>
     </IonApp>
   );
 };
