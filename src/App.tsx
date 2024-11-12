@@ -120,22 +120,22 @@ const App: React.FC = () => {
   const wsRef = useRef<WebSocket | null>(null);
 
   React.useEffect(() => {
-    const wsState = localStorage.getItem("wsState");
-    if (wsState && wsState !== "") {
-      setWsState(wsState);
-    }
-
-    const token = localStorage.getItem("token");
-    if (token && token !== "") {
-      setToken(token);
-    }
-    const uname = localStorage.getItem("uname");
-    if (uname && uname !== "") {
-      setUname(uname);
-    }
+    // const token = localStorage.getItem("token");
+    // if (token && token !== "") {
+    //   setToken(token);
+    // }
+    // const uname = localStorage.getItem("uname");
+    // if (uname && uname !== "") {
+    //   setUname(uname);
+    // }
   }, []);
 
   const connectWebSocket = () => {
+    if (wsState == "open") {
+      console.log("already connected, returning");
+      return;
+    }
+    console.log("connect web socket!!!");
     if (wsRef.current) {
       wsRef.current.close(); // Close the existing connection if any
     }
@@ -143,13 +143,12 @@ const App: React.FC = () => {
     const ws = new WebSocket("ws://localhost:3000?username=" + uname);
 
     ws.onopen = () => {
-      console.log("Sending token to server");
+      console.log("onopen: Sending token to server. websocket is open.");
 
       console.log("wsstate is now:", wsState);
       ws.send(token);
       console.log("setting ws state to open!");
       setWsState("open");
-      localStorage.setItem("wsState", "open");
       console.log("wsstate is now:", wsState);
       processActionQueue(token, actions, setActions);
     };
@@ -256,7 +255,7 @@ const App: React.FC = () => {
                 <Route path="/login" exact render={() => <LoginPage />} />
                 <Route path="/carBy/:id" exact render={() => <CarEditPage />} />
                 <Route path="/cars" render={() => <CarList />} />
-                <Route exact path="/" render={() => <Redirect to="/cars" />} />
+                <Route exact path="/" render={() => <Redirect to="/login" />} />
                 <Route exact path="/carsadd" render={() => <AddCarPage />} />
               </IonReactRouter>
             </CarsContext.Provider>
