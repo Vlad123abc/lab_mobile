@@ -120,14 +120,14 @@ const App: React.FC = () => {
   const wsRef = useRef<WebSocket | null>(null);
 
   React.useEffect(() => {
-    // const token = localStorage.getItem("token");
-    // if (token && token !== "") {
-    //   setToken(token);
-    // }
-    // const uname = localStorage.getItem("uname");
-    // if (uname && uname !== "") {
-    //   setUname(uname);
-    // }
+    const token = localStorage.getItem("token");
+    if (token && token !== "") {
+      setToken(token);
+    }
+    const uname = localStorage.getItem("uname");
+    if (uname && uname !== "") {
+      setUname(uname);
+    }
   }, []);
 
   const connectWebSocket = () => {
@@ -211,19 +211,15 @@ const App: React.FC = () => {
 
     switch (event) {
       case "created":
-        setCars((prevCars) => [...prevCars, payload.item]);
+        setCars((prevCars) => [...prevCars, payload]);
         break;
       case "updated":
         setCars((prevCars) =>
-          prevCars.map((car) =>
-            car.id === payload.item.id ? payload.item : car,
-          ),
+          prevCars.map((car) => (car.id === payload.id ? payload : car)),
         );
         break;
       case "deleted":
-        setCars((prevCars) =>
-          prevCars.filter((car) => car.id !== payload.item.id),
-        );
+        setCars((prevCars) => prevCars.filter((car) => car.id !== payload.id));
         break;
       default:
         console.warn("Unknown WebSocket event:", event);
