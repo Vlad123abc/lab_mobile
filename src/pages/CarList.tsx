@@ -12,7 +12,7 @@ import NetworkStatus from "../components/NetworkStatus";
 
 const CarList = (): React.JSX.Element => {
   const history = useHistory();
-  const { cars } = useContext(CarsContext);
+  const { cars, currentPage, setCurrentPage } = useContext(CarsContext);
 
   const [filter, setFilter] = useState(""); // State to track the filter input
 
@@ -20,10 +20,21 @@ const CarList = (): React.JSX.Element => {
   const filteredCars = cars.filter((car) =>
     car.brand.toLowerCase().includes(filter.toLowerCase()),
   );
+  const handleNextPage = () => {
+    if (currentPage < 100) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
   {
     console.log("cars are:", cars);
     console.log("filtered cars are:", filteredCars);
+    console.log("current page is:", currentPage);
   }
 
   return (
@@ -56,6 +67,15 @@ const CarList = (): React.JSX.Element => {
           }}
         >
           Add cars
+        </IonButton>
+      </div>
+      <div>
+        <IonButton onClick={handlePreviousPage} disabled={currentPage === 1}>
+          Previous
+        </IonButton>
+        <span>Page: {currentPage}</span>
+        <IonButton onClick={handleNextPage} disabled={currentPage === 100}>
+          Next
         </IonButton>
       </div>
     </div>

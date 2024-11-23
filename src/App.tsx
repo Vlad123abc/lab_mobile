@@ -59,16 +59,20 @@ interface IWsState {
 }
 
 export const WsStateContext = createContext<IWsState>({
-  wsState: "BALUBA-NOTSET",
+  wsState: "websocket-state-notset",
   setWsState: () => {},
 });
 
 interface ICars {
+  currentPage: number;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   cars: CarProps[];
   setCars: React.Dispatch<React.SetStateAction<CarProps[]>>;
 }
 
 export const CarsContext = createContext<ICars>({
+  currentPage: 1,
+  setCurrentPage: () => {},
   cars: [],
   setCars: () => {},
 });
@@ -113,6 +117,7 @@ export const AuthContext = createContext<IAuthentication>({
 
 const App: React.FC = () => {
   const [cars, setCars] = React.useState<CarProps[]>([]);
+  const [currentPage, setCurrentPage] = React.useState<number>(1);
   const [token, setToken] = React.useState<string>("");
   const [uname, setUname] = React.useState<string>("");
   const [wsState, setWsState] = React.useState<string>("");
@@ -175,6 +180,21 @@ const App: React.FC = () => {
 
     wsRef.current = ws;
   };
+
+  const getCars = () => {
+    console.log("Fetching with token: " + token);
+    if (token !== "") {
+      axios
+        .get<CarProps[]>("http://localhost:3000/car?page=" + currentPage, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((resp) => resp.data)
+        .then((cars) => setCars(cars))
+        .catch((err) => console.log("Error: " + err));
+    }
+  };
   React.useEffect(() => {
     // Fetch initial car list
     console.log("Fetching with token: " + token);
@@ -204,6 +224,11 @@ const App: React.FC = () => {
     console.log("Items have been updated due to  new wsState:", wsState);
     processActionQueue(token, actions, setActions);
   }, [wsState]);
+
+  React.useEffect(() => {
+    console.log("Items have been updated due to currentPage:", currentPage);
+    getCars();
+  }, [currentPage]);
 
   // Handle WebSocket messages to update car list
   const handleWebSocketMessage = (message: any) => {
@@ -243,6 +268,8 @@ const App: React.FC = () => {
           >
             <CarsContext.Provider
               value={{
+                currentPage: currentPage,
+                setCurrentPage: setCurrentPage,
                 cars: cars,
                 setCars: setCars,
               }}
