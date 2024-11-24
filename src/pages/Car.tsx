@@ -1,20 +1,31 @@
-import React, { memo } from 'react';
-import { IonItem, IonLabel } from '@ionic/react';
-import { getLogger } from '../core';
-import {CarProps} from "./CarProps";
-import {useHistory} from "react-router";
+import React, { memo } from "react";
+import { IonButton, IonItem, IonLabel } from "@ionic/react";
+import { getLogger } from "../core";
+import { CarProps } from "./CarProps";
+import { useHistory } from "react-router";
 
-const log = getLogger('Item');
-
-const Car: React.FC<CarProps> = ({ id, brand,date ,is_new}) => {
-    const history = useHistory()
-    return (
-        <IonItem>
-            <IonLabel onClick={()=>{
-                history.push(`/carBy/${id}`)
-            }}>{`id: ${id}, brand: ${brand}, date: ${date}, new: ${is_new}`}</IonLabel>
-        </IonItem>
-    )
+const log = getLogger("Item");
+const Car: React.FC<CarProps> = ({ id, brand, date, is_new, car_image }) => {
+  const history = useHistory();
+  return (
+    <tr>
+      <td>{id}</td>
+      <td>{brand}</td>
+      <td>{date}</td>
+      <td>{is_new ? "Yes" : "No"}</td>
+      <td>{car_image}</td>
+      <td>
+        {" "}
+        <IonButton
+          onClick={() => {
+            history.push(`/carBy/${id}`);
+          }}
+        >
+          Edit
+        </IonButton>
+      </td>
+    </tr>
+  );
 };
 
 export default memo(Car);

@@ -160,8 +160,8 @@ const App: React.FC = () => {
 
     ws.onclose = () => {
       console.log("ws disconnected!!!");
-      setWsState("disco");
-      localStorage.setItem("wsState", "disco");
+      setWsState("disconnected");
+      localStorage.setItem("wsState", "disconnected");
       console.log("wsstate is now:", wsState);
       setTimeout(() => {
         connectWebSocket();

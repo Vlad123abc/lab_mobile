@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import Car from "./Car";
+import "./CarList.css"; // Import the CSS file
 import {
   IonButton,
   IonInfiniteScroll,
@@ -42,17 +43,29 @@ const CarList = (): React.JSX.Element => {
       <div>
         <NetworkStatus />
         {/* Display filtered cars */}
-
-        {filteredCars.map((car) => (
-          <Car
-            key={car.id}
-            id={car.id}
-            brand={car.brand}
-            date={car.date}
-            is_new={car.is_new}
-          />
-        ))}
-
+        <table className="car-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Brand</th>
+              <th>Date</th>
+              <th>Is new</th>
+              <th>Image</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredCars.map((car) => (
+              <Car
+                key={car.id}
+                id={car.id}
+                brand={car.brand}
+                date={car.date}
+                is_new={car.is_new}
+                car_image={car.car_image}
+              />
+            ))}
+          </tbody>
+        </table>
         {/* Input field for filtering */}
         <IonInput
           placeholder={"Filter by brand"}

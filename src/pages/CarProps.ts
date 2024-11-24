@@ -3,6 +3,7 @@ export interface CarProps {
   brand: string;
   date: string;
   is_new: boolean;
+  car_image: string; // base64-encoded blob
 }
 
 export interface CarAction {
