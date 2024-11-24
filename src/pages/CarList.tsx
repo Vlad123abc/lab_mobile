@@ -77,21 +77,6 @@ const CarList = (): React.JSX.Element => {
                 <Car {...car} />
               </IonRow>
             ))}
-            {filteredCars.map((car, index) => (
-              <IonRow
-                key={car.id}
-                className={index % 2 === 0 ? "even-row" : "odd-row"}
-              >
-                <Car
-                  key={car.id}
-                  id={car.id}
-                  brand={car.brand}
-                  date={car.date}
-                  is_new={car.is_new}
-                  car_image={car.car_image}
-                />{" "}
-              </IonRow>
-            ))}
           </IonGrid>
           {/* Input field for filtering */}
           <IonInput

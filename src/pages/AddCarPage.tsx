@@ -74,7 +74,6 @@ const AddCarPage = (): React.JSX.Element => {
         Is new
       </IonCheckbox>
       <div>
-        {" "}
         {car.car_image && (
           <div style={{ marginTop: "20px" }}>
             <img

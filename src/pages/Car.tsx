@@ -13,9 +13,14 @@ const Car: React.FC<CarProps> = ({ id, brand, date, is_new, car_image }) => {
       <IonCol>{brand}</IonCol>
       <IonCol>{date}</IonCol>
       <IonCol className="left-align">{is_new ? "Yes" : "No"}</IonCol>
-      <IonCol>{car_image}</IonCol>
       <IonCol>
-        {" "}
+        <img
+          src={car_image}
+          alt="Car Preview"
+          style={{ width: "100%", maxWidth: "300px", height: "auto" }}
+        />
+      </IonCol>
+      <IonCol>
         <IonButton
           onClick={() => {
             history.push(`/carBy/${id}`);
