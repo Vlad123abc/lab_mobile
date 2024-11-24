@@ -7,7 +7,7 @@
 
 .header-row {
   background-color: #009879;
-  color: #ffffff;
+  color: #ffffff; /* Keep header text white for contrast */
 }
 
 .left-align {
@@ -18,14 +18,17 @@
 
 .even-row {
   background-color: #f3f3f3;
+  color: black; /* Set text color to black */
 }
 
 .odd-row {
   background-color: #ffffff;
+  color: black; /* Set text color to black */
 }
 
 .car-table .IonRow {
   border-bottom: 1px solid #dddddd;
+  color: black; /* Ensure all rows have black text */
 }
 
 .car-table .IonRow:last-of-type {
@@ -34,4 +37,39 @@
 
 .car-table .IonRow:hover {
   background-color: #f1f1f1;
+  color: black; /* Keep text black on hover */
+}
+
+.car-table .IonCol {
+  color: black; /* Set text color inside columns */
+}
+
+.animated-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.animated-button:hover {
+  transform: scale(1.1); /* Slight zoom on hover */
+  background-color: #45a049;
+}
+
+.bouncing-text {
+  animation: bounce 1s infinite;
+  font-size: 2rem;
+  color: #009879;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }

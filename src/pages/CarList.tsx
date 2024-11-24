@@ -9,7 +9,7 @@ import {
   IonRow,
   IonCol,
   IonInput,
-  IonContent,
+  IonContent, IonToolbar, IonTitle, IonHeader, IonPage,
 } from "@ionic/react";
 import { useHistory } from "react-router";
 import { CarsContext } from "../App";
@@ -43,6 +43,12 @@ const CarList = (): React.JSX.Element => {
   }
 
   return (
+      <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle className="bouncing-text">Cars List</IonTitle>
+        </IonToolbar>
+      </IonHeader>
     <IonContent>
       <div>
         <div>
@@ -85,7 +91,7 @@ const CarList = (): React.JSX.Element => {
             onIonChange={(e) => setFilter(e.detail.value || "")}
           />
 
-          <IonButton
+          <IonButton className="animated-button"
             onClick={(e) => {
               e.preventDefault();
               history.push("/carsadd");
@@ -105,6 +111,7 @@ const CarList = (): React.JSX.Element => {
         </div>
       </div>
     </IonContent>
+        </IonPage>
   );
 };
 
