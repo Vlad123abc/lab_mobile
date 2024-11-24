@@ -9,7 +9,11 @@ import {
   IonRow,
   IonCol,
   IonInput,
-  IonContent, IonToolbar, IonTitle, IonHeader, IonPage,
+  IonContent,
+  IonToolbar,
+  IonTitle,
+  IonHeader,
+  IonPage,
 } from "@ionic/react";
 import { useHistory } from "react-router";
 import { CarsContext } from "../App";
@@ -43,78 +47,82 @@ const CarList = (): React.JSX.Element => {
   }
 
   return (
-      <IonPage>
+    <IonPage>
       <IonHeader>
         <IonToolbar>
           <IonTitle className="bouncing-text">Cars List</IonTitle>
         </IonToolbar>
       </IonHeader>
-    <IonContent>
-      <div>
+      <IonContent>
         <div>
-          <NetworkStatus />
-          {/* Display filtered cars */}
-          <IonGrid className="car-table">
-            <IonRow className="header-row">
-              <IonCol>
-                <strong>ID</strong>
-              </IonCol>
-              <IonCol>
-                <strong>Brand</strong>
-              </IonCol>
-              <IonCol>
-                <strong>Date</strong>
-              </IonCol>
-              <IonCol>
-                <strong>Is new?</strong>
-              </IonCol>
-              <IonCol>
-                <strong>Picture</strong>
-              </IonCol>
-              <IonCol>
-                <strong>Position</strong>
-              </IonCol>
-              <IonCol>
-                <strong>Action</strong>
-              </IonCol>
-            </IonRow>
-            {cars.map((car, index) => (
-              <IonRow
-                key={car.id}
-                className={index % 2 === 0 ? "even-row" : "odd-row"}
-              >
-                <Car car={car} />
+          <div>
+            <NetworkStatus />
+            {/* Display filtered cars */}
+            <IonGrid className="car-table">
+              <IonRow className="header-row">
+                <IonCol>
+                  <strong>ID</strong>
+                </IonCol>
+                <IonCol>
+                  <strong>Brand</strong>
+                </IonCol>
+                <IonCol>
+                  <strong>Date</strong>
+                </IonCol>
+                <IonCol>
+                  <strong>Is new?</strong>
+                </IonCol>
+                <IonCol>
+                  <strong>Picture</strong>
+                </IonCol>
+                <IonCol>
+                  <strong>Position</strong>
+                </IonCol>
+                <IonCol>
+                  <strong>Action</strong>
+                </IonCol>
               </IonRow>
-            ))}
-          </IonGrid>
-          {/* Input field for filtering */}
-          <IonInput
-            placeholder={"Filter by brand"}
-            value={filter}
-            onIonChange={(e) => setFilter(e.detail.value || "")}
-          />
+              {filteredCars.map((car, index) => (
+                <IonRow
+                  key={car.id}
+                  className={index % 2 === 0 ? "even-row" : "odd-row"}
+                >
+                  <Car car={car} />
+                </IonRow>
+              ))}
+            </IonGrid>
+            {/* Input field for filtering */}
+            <IonInput
+              placeholder={"Filter by brand"}
+              value={filter}
+              onIonChange={(e) => setFilter(e.detail.value || "")}
+            />
 
-          <IonButton className="animated-button"
-            onClick={(e) => {
-              e.preventDefault();
-              history.push("/carsadd");
-            }}
-          >
-            Add cars
-          </IonButton>
+            <IonButton
+              className="animated-button"
+              onClick={(e) => {
+                e.preventDefault();
+                history.push("/carsadd");
+              }}
+            >
+              Add cars
+            </IonButton>
+          </div>
+          <div>
+            <IonButton
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </IonButton>
+            <span>Page: {currentPage}</span>
+            <IonButton onClick={handleNextPage} disabled={currentPage === 100}>
+              Next
+            </IonButton>
+          </div>
         </div>
-        <div>
-          <IonButton onClick={handlePreviousPage} disabled={currentPage === 1}>
-            Previous
-          </IonButton>
-          <span>Page: {currentPage}</span>
-          <IonButton onClick={handleNextPage} disabled={currentPage === 100}>
-            Next
-          </IonButton>
-        </div>
-      </div>
-    </IonContent>
-        </IonPage>
+      </IonContent>
+    </IonPage>
   );
 };
 
