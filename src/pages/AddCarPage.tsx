@@ -13,6 +13,7 @@ import { AuthContext } from "../App";
 import { ActionsContext } from "../App";
 import CarMap from "../components/CarMap";
 import { processActionQueue } from "../App";
+import "./AddCarPageStyles.css"; // Import the CSS file
 
 const AddCarPage = (): React.JSX.Element => {
   const { token } = useContext(AuthContext);
@@ -109,7 +110,7 @@ const AddCarPage = (): React.JSX.Element => {
         />
       </div>
       <div>
-        <IonButton
+        <IonButton expand="block" className="custom-ion-button"
           onClick={() => {
             let action: CarAction = {
               action: "Add",

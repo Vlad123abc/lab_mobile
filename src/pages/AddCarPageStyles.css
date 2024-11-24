@@ -1,0 +1,9 @@
+.custom-ion-button {
+    --background: linear-gradient(to right, #ff7e5f, #feb47b);
+    --background-activated: #ff6a3d;
+    --transition: background-color 0.3s ease-in-out;
+}
+
+.custom-ion-button:hover {
+    --background: linear-gradient(to right, #feb47b, #ff7e5f);
+}
