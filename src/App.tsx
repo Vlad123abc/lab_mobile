@@ -86,18 +86,33 @@ export const processActionQueue = (
 
   if (actionQueue.length > 0) {
     let car = actionQueue.at(0);
-    axios
-      .post("http://localhost:3000/car", car?.car, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((resp) => {
-        console.log("Car added, status:", resp.status);
-        actionQueue = actionQueue.slice(1);
-        setActions(actionQueue);
-      })
-      .catch((err) => console.log("Err car not sent due to: " + err));
+    if (car?.action == "Add") {
+      axios
+        .post("http://localhost:3000/car", car?.car, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((resp) => {
+          console.log("Car added, status:", resp.status);
+          actionQueue = actionQueue.slice(1);
+          setActions(actionQueue);
+        })
+        .catch((err) => console.log("Err car not sent due to: " + err));
+    } else if (car?.action == "Change") {
+      axios
+        .put("http://localhost:3000/car/" + car?.car.id, car?.car, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((resp) => {
+          console.log("Car updated , status:", resp.status);
+          actionQueue = actionQueue.slice(1);
+          setActions(actionQueue);
+        })
+        .catch((err) => console.log("Err car not sent due to: " + err));
+    }
   }
 };
 
@@ -239,8 +254,11 @@ const App: React.FC = () => {
         setCars((prevCars) => [...prevCars, payload]);
         break;
       case "updated":
+        console.log("received updated car", payload);
         setCars((prevCars) =>
-          prevCars.map((car) => (car.id === payload.id ? payload : car)),
+          prevCars.map((car) =>
+            parseInt(car.id, 10) === parseInt(payload.id, 10) ? payload : car,
+          ),
         );
         break;
       case "deleted":

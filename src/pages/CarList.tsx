@@ -66,6 +66,9 @@ const CarList = (): React.JSX.Element => {
                 <strong>Picture</strong>
               </IonCol>
               <IonCol>
+                <strong>Position</strong>
+              </IonCol>
+              <IonCol>
                 <strong>Action</strong>
               </IonCol>
             </IonRow>
@@ -74,7 +77,7 @@ const CarList = (): React.JSX.Element => {
                 key={car.id}
                 className={index % 2 === 0 ? "even-row" : "odd-row"}
               >
-                <Car {...car} />
+                <Car car={car} />
               </IonRow>
             ))}
           </IonGrid>

@@ -4,6 +4,8 @@ export interface CarProps {
   date: string;
   is_new: boolean;
   car_image: string; // base64-encoded blob
+  latitude: number;
+  longitude: number;
 }
 
 export interface CarAction {

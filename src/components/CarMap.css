@@ -1,0 +1,10 @@
+/* Hide the attribution when the map height is 100px or less */
+.map-container {
+  position: relative;
+  height: 100px; /* Example height */
+  width: 100%; /* Full width */
+}
+
+.map-container .leaflet-control-attribution {
+  display: none; /* Hide the attribution */
+}

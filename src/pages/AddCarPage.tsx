@@ -11,6 +11,7 @@ import axios from "axios";
 import { useHistory } from "react-router";
 import { AuthContext } from "../App";
 import { ActionsContext } from "../App";
+import CarMap from "../components/CarMap";
 import { processActionQueue } from "../App";
 
 const AddCarPage = (): React.JSX.Element => {
@@ -23,6 +24,8 @@ const AddCarPage = (): React.JSX.Element => {
     id: "",
     is_new: false,
     car_image: "",
+    latitude: 46.770439,
+    longitude: 23.591423,
   });
   const history = useHistory();
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,6 +47,15 @@ const AddCarPage = (): React.JSX.Element => {
     }
   };
 
+  const handleLocationSelect = (lat: number, lng: number) => {
+    console.log(`Selected location: ${lat}, ${lng}`);
+    setCar((prevCar) => ({
+      ...prevCar,
+      latitude: lat,
+      longitude: lng,
+    }));
+    // Update the car's location or perform other actions
+  };
   return (
     <div>
       <IonInput
@@ -88,7 +100,14 @@ const AddCarPage = (): React.JSX.Element => {
         <IonLabel position="stacked">Image2</IonLabel>
         <input type="file" accept="image/*" onChange={handleFileChange} />
       </div>
-
+      <div>
+        <CarMap
+          car={car}
+          height="400px"
+          width="100%"
+          onLocationSelect={handleLocationSelect}
+        />
+      </div>
       <div>
         <IonButton
           onClick={() => {
@@ -102,6 +121,7 @@ const AddCarPage = (): React.JSX.Element => {
             history.push("/cars");
           }}
         >
+          <div></div>
           Add car
         </IonButton>
       </div>
