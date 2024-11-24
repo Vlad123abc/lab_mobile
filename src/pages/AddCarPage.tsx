@@ -15,6 +15,7 @@ const AddCarPage = (): React.JSX.Element => {
     date: "",
     id: "",
     is_new: false,
+    car_image: "",
   });
   const history = useHistory();
 

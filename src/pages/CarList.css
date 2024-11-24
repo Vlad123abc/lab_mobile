@@ -1,36 +1,37 @@
+/* CarTable.css */
 .car-table {
   width: 100%;
   border-collapse: collapse;
   margin: 20px 0;
-  font-size: 1em;
-  font-family: "Arial", sans-serif;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-.car-table thead tr {
+.header-row {
   background-color: #009879;
   color: #ffffff;
-  text-align: left;
 }
 
-.car-table th,
-.car-table td {
+.left-align {
+  text-align: left;
   padding: 12px 15px;
   border: 1px solid #dddddd;
 }
 
-.car-table tbody tr {
-  border-bottom: 1px solid #dddddd;
-}
-
-.car-table tbody tr:nth-of-type(even) {
+.even-row {
   background-color: #f3f3f3;
 }
 
-.car-table tbody tr:last-of-type {
+.odd-row {
+  background-color: #ffffff;
+}
+
+.car-table .IonRow {
+  border-bottom: 1px solid #dddddd;
+}
+
+.car-table .IonRow:last-of-type {
   border-bottom: 2px solid #009879;
 }
 
-.car-table tbody tr:hover {
+.car-table .IonRow:hover {
   background-color: #f1f1f1;
 }

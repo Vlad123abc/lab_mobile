@@ -5,6 +5,9 @@ import {
   IonButton,
   IonInfiniteScroll,
   IonInfiniteScrollContent,
+  IonGrid,
+  IonRow,
+  IonCol,
   IonInput,
 } from "@ionic/react";
 import { useHistory } from "react-router";
@@ -43,18 +46,40 @@ const CarList = (): React.JSX.Element => {
       <div>
         <NetworkStatus />
         {/* Display filtered cars */}
-        <table className="car-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Brand</th>
-              <th>Date</th>
-              <th>Is new</th>
-              <th>Image</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredCars.map((car) => (
+        <IonGrid className="car-table">
+          <IonRow className="header-row">
+            <IonCol>
+              <strong>ID</strong>
+            </IonCol>
+            <IonCol>
+              <strong>Brand</strong>
+            </IonCol>
+            <IonCol>
+              <strong>Date</strong>
+            </IonCol>
+            <IonCol>
+              <strong>Is new?</strong>
+            </IonCol>
+            <IonCol>
+              <strong>Picture</strong>
+            </IonCol>
+            <IonCol>
+              <strong>Action</strong>
+            </IonCol>
+          </IonRow>
+          {cars.map((car, index) => (
+            <IonRow
+              key={car.id}
+              className={index % 2 === 0 ? "even-row" : "odd-row"}
+            >
+              <Car {...car} />
+            </IonRow>
+          ))}
+          {filteredCars.map((car, index) => (
+            <IonRow
+              key={car.id}
+              className={index % 2 === 0 ? "even-row" : "odd-row"}
+            >
               <Car
                 key={car.id}
                 id={car.id}
@@ -62,10 +87,10 @@ const CarList = (): React.JSX.Element => {
                 date={car.date}
                 is_new={car.is_new}
                 car_image={car.car_image}
-              />
-            ))}
-          </tbody>
-        </table>
+              />{" "}
+            </IonRow>
+          ))}
+        </IonGrid>
         {/* Input field for filtering */}
         <IonInput
           placeholder={"Filter by brand"}
